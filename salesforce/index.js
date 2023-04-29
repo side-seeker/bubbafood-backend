@@ -1,3 +1,6 @@
-const { conn } = require('./connection')
+const { conn, sf } = require('./connection')
 
-module.exports = conn
+module.exports = {
+    conn,
+    sf
+}

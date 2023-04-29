@@ -1,20 +1,14 @@
 const salesforce = require('jsforce')
+require('dotenv').config()
 
 const conn = new salesforce.Connection({
-    loginUrl: 'https://softronixitsolution5-dev-ed.develop.my.salesforce.com'
+    loginUrl: process.env.SALESFORCE_URL
 })
 
-conn.login('shyam@soft.com', 'Sozo@123nHsxMRMGxFFuEPBGmYU6YUjV', (err, res) => {
-    if (err) {
-        console.log("Error Occurred")
-        console.log(err)
-        return
-    }
-    console.log("User ID: " + res.id);
-    console.log("Org ID: " + res.organizationId);
-})
+const sf = conn.login(process.env.SALESFORCE_USERNAME, process.env.SALESFORCE_PWD)
 
 
 module.exports = {
-    conn
+    conn,
+    sf
 }
