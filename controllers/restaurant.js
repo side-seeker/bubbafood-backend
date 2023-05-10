@@ -5,16 +5,8 @@ const salesforce = require('../salesforce')
 //fetch restraunt given the brand id
 
 async function getRestraunts(req, res) {
-<<<<<<< HEAD
     const brand_id = req.params.brand_id;
     result = await salesforce.conn.query("SELECT Name, Address__c, Phone_no__c From Restraunt__c WHERE Brand__c= '" + brand_id + "'");
-=======
-
-    const brand_id = req.params.brand_id;
-
-    result = await salesforce.conn.query("SELECT Name, Address__c,Name__c, Image_URL__c From Restraunt__c WHERE Brand__c= '" + brand_id + "'");
-
->>>>>>> e38be19ab11b58e6f13746e64964f35cae5ae6b8
     return res.send(result.records);
 
 }
@@ -68,12 +60,7 @@ async function reserveTable(req, res) {
     })
 
     return res.redirect('/');
-<<<<<<< HEAD
 }  
-=======
-
-}
->>>>>>> e38be19ab11b58e6f13746e64964f35cae5ae6b8
 
 
 
@@ -84,9 +71,4 @@ module.exports = {
     reserveTable,
 
     getRestraunts
-<<<<<<< HEAD
 }
-=======
-
-}
->>>>>>> e38be19ab11b58e6f13746e64964f35cae5ae6b8
