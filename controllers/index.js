@@ -4,6 +4,7 @@ const brand = require('./brand')
 const menu = require('./menu')
 const restaurant = require('./restaurant')
 const comment=require('./comment')
+const ordercomment=require('./ordercomment')
 
 module.exports = {
     ...test,
@@ -11,5 +12,6 @@ module.exports = {
     ...brand,
     ...menu,
     ...restaurant,
-    ...comment
+    ...comment,
+    ...ordercomment
 }

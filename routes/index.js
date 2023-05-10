@@ -4,15 +4,17 @@ const brandRouter = require('./brand-rt')
 const menuRouter = require('./menu-rt')
 const commentRouter= require('./comment-rt')
 const restRouter = require('./restaurant-rt')
+const ordercommentRouter=require('./ordercomment-rt')
 const express = require('express')
+const { startTimer } = require('winston') 
 
 // Index Router
 const router = express.Router()
-
 router.use('/test', testRouter)
 router.use('/user', userRouter)
 router.use('/brand', brandRouter)
 router.use('/menu', menuRouter)
 router.use('/restaurant', restRouter)
 router.use('/comment',commentRouter)
+router.use('/ordercomment',ordercommentRouter)
 module.exports = router
