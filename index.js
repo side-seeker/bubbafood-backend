@@ -1,4 +1,5 @@
 const router = require('./routes')
+const adrouter = require('./Ads/routs')
 const express = require('express')
 const cors = require('cors')
 const { sf, conn } = require('./salesforce')
@@ -12,6 +13,7 @@ app.use(cors())
 app.use(logger)
 app.use(express.json())
 app.use('/', router)
+app.use('/ads',adrouter)
 
 sf.
     then((userinfo) => {
