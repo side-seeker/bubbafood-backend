@@ -6,6 +6,7 @@ const restaurant = require('./restaurant')
 const comment=require('./comment')
 const ordercomment=require('./ordercomment')
 const rewards=require('./rewards')
+const orders = require('./order.js')
 
 module.exports = {
     ...test,
@@ -15,5 +16,6 @@ module.exports = {
     ...restaurant,
     ...comment,
     ...ordercomment,
-    ...rewards
+    ...rewards,
+    ...orders
 }

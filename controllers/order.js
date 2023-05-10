@@ -1,5 +1,6 @@
 const salesforce = require('../salesforce')
 const status = require('http-status')
+const chalk = require('chalk')
 
 /**
  * Get Orders for a Customer
@@ -15,10 +16,10 @@ async function createOrders(req, res) {
         // TODO: Payment Details Pending for now...
 
         // Obtain the Result Order
-        const order = await salesforce.conn.sobject('Order__c').create({
+        const order = await salesforce.conn.sobject('UpdatedOrder__c').create({
             User__c: userId,
             Restraunt__c: restaurantId,
-            Takeaway_Delivery__c: deliveryOption
+            Delivery_Takeaway__c: deliveryOption
         }, (err, ret) => {
             if (err) {
                 console.log(err)
@@ -27,11 +28,17 @@ async function createOrders(req, res) {
             console.log(ret)
         })
 
-        salesforce.conn.sobject('Order_Details__c')
-            .create(cartItems.map((item) => ({ Order__c: order.id, Food_Item__c: item.ID, Quantity: 1 })), (err, _ret) => {
+        // Reduce cartItems to array of details
+        const orderDetails = Object.keys(cartItems)
+            .map(brand => cartItems[brand])
+            .reduce((prev, curr) => prev.concat(curr))
+
+        salesforce.conn.sobject('Order_Detail__c')
+            .create(orderDetails.map((item) => ({ UpdatedOrder__c: order.id, Food_Item__c: item.Id })), (err, ret) => {
                 if (err) {
                     console.log(err)
                 }
+                ret.forEach((entry) => entry.success ? console.log(chalk.green('Inserted ID:'), entry.id) : console.log(chalk.red('Failed to add Entry')))
             })
         return res.status(status.CREATED).send()
     }

@@ -6,8 +6,8 @@ const commentRouter= require('./comment-rt')
 const restRouter = require('./restaurant-rt')
 const ordercommentRouter=require('./ordercomment-rt')
 const rewardsRouter=require('./rewards-rt')
+const orderRouter = require('./order-rt.js')
 const express = require('express')
-const { startTimer } = require('winston') 
 
 // Index Router
 const router = express.Router()
@@ -18,5 +18,6 @@ router.use('/menu', menuRouter)
 router.use('/restaurant', restRouter)
 router.use('/comment',commentRouter)
 router.use('/ordercomment',ordercommentRouter)
+router.use('/order', orderRouter)
 router.use('/rewards',rewardsRouter)
 module.exports = router

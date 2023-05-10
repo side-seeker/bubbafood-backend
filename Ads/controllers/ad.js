@@ -1,6 +1,5 @@
 const salesforce = require('../../salesforce')
 
-
 async function getAds(req, res) {
     const brand_id = req.params.brand_id;
 

@@ -4,7 +4,6 @@ const salesforce = require('../salesforce')
 async function getMenu(req, res) {
     const brand_id = req.params.brand_id;
     result = await salesforce.conn.query("SELECT ID, Description__c, Name, Is_Veg__c, Name__c, Price__c, Ratings__c, Speciality__c, Type__c, Image_Url__c From Food_Item__c WHERE Brand__c = '" + brand_id + "' AND Available__c = true");
-    console.log(result.records)
     return res.json(result.records);
 }
 
@@ -12,7 +11,6 @@ async function getMenu(req, res) {
 async function getHomeOffers(req, res) {
     try {
       const result = await salesforce.conn.query("SELECT ID, Description__c, Name, Is_Veg__c, Name__c, Price__c, Ratings__c, Speciality__c, Type__c, Image_Url__c FROM Food_Item__c WHERE Available__c = true");
-      console.log(result.records);
       return res.json(result.records);
     } catch (error) {
       console.error("An error occurred while fetching the menu:", error);
