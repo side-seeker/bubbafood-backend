@@ -1,5 +1,4 @@
 const test = require('./test')
-
 const user = require('./user')
 const brand = require('./brand')
 const menu = require('./menu')
