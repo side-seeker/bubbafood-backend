@@ -9,10 +9,7 @@ const chalk = require('chalk')
 const app = express()
 
 app.use(cors())
-<<<<<<< HEAD
 app.use(express.json())
-=======
->>>>>>> parent of c92b057 (orders completed)
 app.use(logger)
 app.use('/', router)
 
