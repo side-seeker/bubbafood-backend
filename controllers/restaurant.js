@@ -8,7 +8,7 @@ async function getRestraunts(req, res) {
 
     const brand_id = req.params.brand_id;
 
-    result = await salesforce.conn.query("SELECT Name, Address__c,Name__c, Image_URL__c From Restraunt__c WHERE Brand__c= '" + brand_id + "'");
+    result = await salesforce.conn.query("SELECT Name, Address__c,Name__c, Image_URL__c From Restraunt__c WHERE Brand__c='" + brand_id + "'");
 
     return res.send(result.records);
 
