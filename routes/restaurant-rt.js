@@ -8,7 +8,7 @@ const router = express.Router()
 router.get('/get/:brand_id', controllers.getRestraunts)
 
 // FIXME: get tables for a specific restaurant
-router.get('/:brandId', controllers.getRestraunts)
+// route.get('/resaurant_id/tables)
 router.get('/getTables/:peoples', controllers.getTables)
 
 // FIXME: book a table through json data
