@@ -1,4 +1,4 @@
-const bcrypt = require('bcryptjs');
+const bcrypt = require('bcryptjs/dist/bcrypt');
 const salesforce = require('../salesforce')
 
 // async function getUsers(req, res) {
@@ -51,7 +51,7 @@ async function loginUser(req, res) {
     const secPass = await bcrypt.hash(password, salt)
 
     console.log(email);
-    result = await salesforce.conn.query("SELECT Email__c, Password__c, Image_Url__c FROM User__c WHERE Email__c= '" + email + "'");
+    result = await salesforce.conn.query("SELECT Name__c, Phone_no__c, Rewards__c, Email__c, Password__c, Image_Url__c, , Address_1__c, Address_2__c, Address_3__c FROM User__c WHERE Email__c= '" + email + "'");
     console.log(result);
     console.log(result.totalSize);
     const passwordCompare = bcrypt.compare(secPass, String(result.Password__C));
