@@ -1,4 +1,4 @@
-const test = require('./test')
+const hello = require('./hello')
 const user = require('./user')
 const brand = require('./brand')
 const menu = require('./menu')
@@ -9,7 +9,7 @@ const rewards=require('./rewards')
 const orders = require('./order.js')
 
 module.exports = {
-    ...test,
+    ...hello,
     ...user,
     ...brand,
     ...menu,

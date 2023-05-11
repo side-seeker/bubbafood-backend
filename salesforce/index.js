@@ -1,6 +1,5 @@
-const { conn, sf } = require('./connection')
+const { conn } = require('./connection')
 
 module.exports = {
-    conn,
-    sf
+    conn
 }
