@@ -1,5 +1,5 @@
 const bcrypt = require('bcryptjs');
-const salesforce = require('../salesforce')
+const salesforce = require('../../salesforce')
 
 
 //restraunt manager signup
