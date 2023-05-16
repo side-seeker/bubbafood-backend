@@ -2,8 +2,14 @@ const salesforce = require('../salesforce')
 
 //fetch brands
 async function getBrands(req, res) {
-    result = await salesforce.conn.query("SELECT ID, Name, Description__c, Name__c, Rating__c FROM Brand__c");
-    return res.json(result.records);
+    try{
+        result = await salesforce.conn.query("SELECT ID, Name, Description__c, Name__c, Rating__c FROM Brand__c");
+        return res.json(result.records);
+    }
+    catch(err){
+        console.log(err.message);
+    }
+    
 }
 
 //fetch offers given the brand id
