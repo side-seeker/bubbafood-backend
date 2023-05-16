@@ -13,7 +13,7 @@ const app = express()
 app.use(cors())
 app.use(express.json())
 app.use(logger)
-app.use('/', router)
+app.use('/api', router)
 app.use('/ads', adRouter)
 app.use('/admin', admin)
 
