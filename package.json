@@ -21,6 +21,7 @@
     "http-status": "^1.6.2",
     "jest-environment-jsdom": "^29.5.0",
     "jsforce": "^1.11.0",
+    "jsonwebtoken": "^9.0.0",
     "morgan": "^1.10.0",
     "nodemon": "^2.0.22",
     "winston": "^3.8.2"

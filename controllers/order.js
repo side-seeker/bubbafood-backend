@@ -13,20 +13,22 @@ async function createOrders(req, res) {
         const paymentType = req.body.payment // Mode of Payment
         const deliveryOption = req.body.type
 
-        // TODO: Payment Details Pending for now...
+        //  TODO: Payment Details Pending for now...
 
         // Obtain the Result Order
-        const order = await salesforce.conn.sobject('UpdatedOrder__c').create({
-            User__c: userId,
-            Restraunt__c: restaurantId,
-            Delivery_Takeaway__c: deliveryOption
-        }, (err, ret) => {
-            if (err) {
-                console.log(err)
-                return res.status(status.INTERNAL_SERVER_ERROR).send()
-            }
-            console.log(ret)
-        })
+        const order = await salesforce.conn
+            .sobject('UpdatedOrder__c')
+            .create({
+                User__c: userId,
+                Restraunt__c: restaurantId,
+                Delivery_Takeaway__c: deliveryOption
+            }, (err, ret) => {
+                if (err) {
+                    console.log(err)
+                    throw err
+                }
+                return ret
+            })
 
         // Reduce cartItems to array of details
         const orderDetails = Object.keys(cartItems)
@@ -34,12 +36,19 @@ async function createOrders(req, res) {
             .reduce((prev, curr) => prev.concat(curr))
 
         salesforce.conn.sobject('Order_Detail__c')
-            .create(orderDetails.map((item) => ({ UpdatedOrder__c: order.id, Food_Item__c: item.Id })), (err, ret) => {
-                if (err) {
-                    console.log(err)
-                }
-                ret.forEach((entry) => entry.success ? console.log(chalk.green('Inserted ID:'), entry.id) : console.log(chalk.red('Failed to add Entry')))
-            })
+            .create(
+                orderDetails
+                    .map((item) => ({ UpdatedOrder__c: order.id, Food_Item__c: item.Id })),
+                (err, ret) => {
+                    if (err) {
+                        console.log(err)
+                        throw err
+                    }
+                    ret.forEach(
+                        (entry) => entry.success ?
+                            console.log(chalk.green('Inserted ID:'), entry.id)
+                            : console.log(chalk.red('Failed to add Entry')))
+                })
         return res.status(status.CREATED).send()
     }
     catch (err) {

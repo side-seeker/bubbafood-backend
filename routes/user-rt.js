@@ -3,13 +3,14 @@ const express = require('express')
 
 const router = express.Router()
 
-// FIXME: JSON data
-router.post('/create/:email/:password/:dob/:name/:phone', controllers.signup)
+router.post('/create', controllers.signup)
 
-// FIXME: JSON data
-router.get('/login/:email/:password', controllers.loginUser)
+router.post('/login', controllers.loginUser)
 
-// FIXME: Not required
-router.get('/logout', controllers.logoutUser)
+router.get('/:token', controllers.token)
+
+router.get('/get/:id', controllers.getUser)
+
+router.post('/update', controllers.updateUser)
 
 module.exports = router

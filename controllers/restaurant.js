@@ -34,43 +34,28 @@ async function getTables(req, res) {
 async function reserveTable(req, res) {
 
     const table_id = req.params.table_id;
-
     const user_id = req.params.user_id;
-
- //   const date = req.params.date;
+    //   const date = req.params.date;
 
     const slot = req.params.slot;
 
-
-
     salesforce.conn.sobject('Reservation__c').create({
-
         //Date__c: date,
-
         Slot__c: slot,
-
         Table__c: table_id,
-
         User__c: user_id
-
     }, (err, res) => {
-
         if (err || !res.success) { return console.error(err, res); }
-
         console.log("Created record id : " + res.id);
-
     })
 
     return res.redirect('/');
-}  
+}
 
 
 
 module.exports = {
-
     getTables,
-
     reserveTable,
-
     getRestraunts
 }

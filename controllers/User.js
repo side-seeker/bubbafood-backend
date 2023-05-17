@@ -1,79 +1,161 @@
-const bcrypt = require('bcryptjs/dist/bcrypt');
+const bcrypt = require('bcryptjs');
 const salesforce = require('../salesforce')
+const jwt = require('jsonwebtoken');
+const status = require('http-status')
 
-// async function getUsers(req, res) {
-//     result = await salesforce.conn.query("SELECT ALL FROM User__c");
-//     // result = await salesforce.conn.query("SELECT Email__c, Password__c, Image_Url__c,  Date_of_Birth__c FROM User__c");
-//     console.log(result)
-//     return res.send(result.records)
-// }
+const SECRETKEY = 'hehesignedbytarunheheh'
 
-
-//user signup
+/**
+ * Signing up the user
+**/
 async function signup(req, res) {
-    console.log("Signing up a User")
-    const email = req.params.email;
-    const password = req.params.password
-    const dob = req.params.dob;
-    const name = req.params.name;
-    const phone = req.params.phone;
+    const email = req.body.email;
+    const password = req.body.password
+    const dob = Date.now().toString()
+    const name = req.body.name;
+    const phone = req.body.phone;
 
-    const salt = await bcrypt.genSalt(10);
-    const secPass = await bcrypt.hash(password, salt)
+    const secPass = await bcrypt.hash(password, 10)
 
-    //Check if there is already a user with that email
-    result = await salesforce.conn.query("SELECT Email__c, Password__c, Image_Url__c FROM User__c WHERE Email__c= '" + email + "'");
-    if (result.totalSize > 0) {
-        console.log("User already exist");
-        //redirect for signup
-        return res.redirect('/singup');
+    // Check if there is already a user with that email
+    result = await salesforce.conn
+        .sobject("User__c")
+        .select("Id")
+        .where({
+            Email__c: email
+        })
+
+    if (result.length > 0) {
+        return res
+            .status(status.CONFLICT)
+            .send()
     }
 
-    salesforce.conn.sobject('User__c').create({
+    const user = await salesforce.conn.sobject("User__c").create({
         Email__c: email,
+        Rewards__c: 0,
         Password__c: secPass,
         Date_of_birth__c: dob,
         Name__c: name,
         Phone_no__c: phone
     }, (err, res) => {
         if (err || !res.success) { return console.error(err, res); }
-        console.log("Created record id : " + res.id);
+        return res
     })
-    return res.redirect('/');
+
+    const payload = {
+        id: user.id
+    }
+
+    const token = jwt.sign(payload, SECRETKEY, { algorithm: 'HS256' })
+
+    await salesforce.conn
+        .sobject("User__c")
+        .find({
+            Id: user.id
+        })
+        .update({
+            Token__c: token
+        })
+
+    return res
+        .status(status.CREATED)
+        .json({ id: user.id, token: token })
 }
 
-//user login
+/**
+ * Logging in user
+**/
 async function loginUser(req, res) {
-    console.log("Checking for the user")
-    const email = req.params.email
-    const password = req.params.password
-    const salt = await bcrypt.genSalt(10);
-    const secPass = await bcrypt.hash(password, salt)
+    const email = req.body.email
+    const password = req.body.password
 
-    console.log(email);
-    result = await salesforce.conn.query("SELECT Name__c, Phone_no__c, Rewards__c, Email__c, Password__c, Image_Url__c, , Address_1__c, Address_2__c, Address_3__c FROM User__c WHERE Email__c= '" + email + "'");
-    console.log(result);
-    console.log(result.totalSize);
-    const passwordCompare = bcrypt.compare(secPass, String(result.Password__C));
+    if (!email || !password) return res.status(status.BAD_REQUEST).send()
+
+    const result = await salesforce.conn
+        .sobject('User__c')
+        .find({
+            Email__c: email
+        })
+
+    if (!result.length) return res.status(status.NOT_FOUND).send()
+
+    const passwordCompare = await bcrypt.compare(password, String(result[0].Password__c));
+
     if (passwordCompare) {
-        console.log("User found")
-        console.log(result);
-        return res.send(result.records)
-    }
-    else {
-        console.log("User not found")
+        return res
+            .status(status.OK)
+            .json({
+                id: result[0].Id,
+                token: result[0].Token__c
+            })
+    } else {
+        return res
+            .status(status.UNAUTHORIZED)
+            .send()
     }
 }
 
-//user logout
-async function logoutUser(req, res) {
-    return res.redirect('/');
+function token(req, res) {
+    const token = req.params.token
+
+    try {
+        const decoded = jwt.verify(token, SECRETKEY)
+        return res
+            .status(status.OK)
+            .json(decoded)
+    } catch (err) {
+        return res
+            .status(status.UNAUTHORIZED)
+            .send()
+    }
+}
+
+async function getUser(req, res) {
+    const id = req.params.id
+    const user = await salesforce.conn
+        .sobject("User__c")
+        .find({
+            Id: id
+        })
+
+    if (!user.length) return res.status(status.NOT_FOUND).send()
+
+    return res
+        .status(status.OK)
+        .json(user[0])
+}
+
+async function updateUser(req, res) {
+    const newDetails = req.body
+    try {
+        const user = await salesforce.conn
+            .sobject("User__c")
+            .update({
+                Id: newDetails.Id,
+                Address_1__c: newDetails.Address_1__c,
+                Address_2__c: newDetails.Address_2__c,
+                Address_3__c: newDetails.Address_3__c,
+                Name__c: newDetails.Name__c,
+                Email__c: newDetails.Email__c
+            })
+    } catch (err) {
+        console.log(err)
+        return res
+            .status(status.BAD_REQUEST)
+            .send()
+    }
+
+    return res
+        .status(status.OK)
+        .send()
 }
 
 
-//fetch the food item menu for a specific brand;
 module.exports = {
     signup,
     loginUser,
-    logoutUser,
+    token,
+    getUser,
+    updateUser
 }
