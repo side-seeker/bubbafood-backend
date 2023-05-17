@@ -1,5 +1,6 @@
 const router = require('./routes')
 const adRouter = require('./Ads/')
+const admin= require('./Admin/routes')
 const express = require('express')
 const cors = require('cors')
 const { conn } = require('./salesforce')
@@ -15,6 +16,7 @@ app.use(express.json())
 app.use(logger)
 app.use('/api', router)
 app.use('/ads', adRouter)
+app.use('/admin', admin)
 
 try {
     conn.login(process.env.SALESFORCE_USERNAME, process.env.SALESFORCE_PWD)
