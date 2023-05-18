@@ -1,4 +1,5 @@
 const salesforce = require('../salesforce')
+const status = require('http-status')
 
 async function getComment(req,res)
 {
@@ -14,6 +15,27 @@ async function getComment(req,res)
     }
     
 }
+
+async function getReservation(req, res) {
+    const userId = req.params.id
+    try {
+        const reservation = await salesforce.conn
+            .sobject('Reservation__c')
+            .select('*')
+            .where({
+                Id: userId
+            })
+        return res
+            .status(status.OK)
+            .json(reservation)
+    } catch(err) {
+        return res
+            .status(status.INTERNAL_SERVER_ERROR)
+            .send()
+    }
+}
+
 module.exports = {
-    getComment
+    getComment,
+    getReservation
 }

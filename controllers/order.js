@@ -21,6 +21,7 @@ async function createOrders(req, res) {
             .create({
                 User__c: userId,
                 Restraunt__c: restaurantId,
+                Date__c: new Date().toISOString(),
                 Delivery_Takeaway__c: deliveryOption
             }, (err, ret) => {
                 if (err) {
@@ -29,6 +30,15 @@ async function createOrders(req, res) {
                 }
                 return ret
             })
+
+        const price = Object.keys(cartItems)
+            .map((brand) => {
+                return cartItems[brand]
+                    .map((item) => item.Price__c + item.addons.reduce((prev, curr) => prev + curr.Price__c, 0))
+                    .reduce((prev, curr) => prev + curr, 0)
+            })
+            .reduce((prev, curr) => prev + curr, 0)
+
 
         // Reduce cartItems to array of details
         const orderDetails = Object.keys(cartItems)
@@ -49,7 +59,19 @@ async function createOrders(req, res) {
                             console.log(chalk.green('Inserted ID:'), entry.id)
                             : console.log(chalk.red('Failed to add Entry')))
                 })
-        return res.status(status.CREATED).send()
+
+        const newRewardPoints = Math.floor(price * 0.04);
+        const user = await salesforce.conn.sobject('User__c')
+            .findOne({ ID: userId });
+
+        salesforce.conn
+            .sobject('User__c')
+            .find({ ID: userId })
+            .update({
+                Rewards__c: (user.Rewards__c || 0) + newRewardPoints
+            });
+
+        return res.status(status.CREATED).json({rewards: (user.Rewards__c || 0) + newRewardPoints, newRewards: newRewardPoints})
     }
     catch (err) {
         console.log(err);
@@ -57,7 +79,41 @@ async function createOrders(req, res) {
     }
 }
 
+async function getOrders(req, res) {
+    const userId = req.params.user_id
+
+    try {
+        const orders = await salesforce.conn
+            .sobject('UpdatedOrder__c')
+            .select('Id, Date__c')
+            .where({
+                User__c: userId
+            })
+
+        const orderDetails = await Promise.all(orders.map(async order => {
+            const foodItems = await salesforce.conn.query(`
+            SELECT Id, Name__c, Price__c, Image_Url__c
+            FROM Food_Item__c
+            WHERE Id IN (SELECT Food_Item__c FROM Order_Detail__c WHERE UpdatedOrder__c = '${order.Id}')
+        `)
+            return { order, items: foodItems.records }
+        }))
+
+        console.log(orderDetails)
+
+        return res
+            .status(status.OK)
+            .json(orderDetails)
+    } catch (err) {
+        console.log(err)
+        return res
+            .status(status.INTERNAL_SERVER_ERROR)
+            .send()
+    }
+}
+
 
 module.exports = {
-    createOrders
+    createOrders,
+    getOrders
 }

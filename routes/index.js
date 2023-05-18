@@ -7,6 +7,7 @@ const restRouter = require('./restaurant-rt')
 const ordercommentRouter=require('./ordercomment-rt')
 const rewardsRouter=require('./rewards-rt')
 const orderRouter = require('./order-rt.js')
+const reservation = require('./Reservation-rt.js')
 const express = require('express')
 
 // Index Router
@@ -20,4 +21,5 @@ router.use('/comment',commentRouter)
 router.use('/ordercomment',ordercommentRouter)
 router.use('/order', orderRouter)
 router.use('/rewards',rewardsRouter)
+router.use('/reserve',reservation)
 module.exports = router

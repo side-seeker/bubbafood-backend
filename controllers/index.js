@@ -7,8 +7,10 @@ const comment=require('./comment')
 const ordercomment=require('./ordercomment')
 const rewards=require('./rewards')
 const orders = require('./order.js')
+const reservation = require('./reservation.js')
 
 module.exports = {
+    ...reservation,
     ...hello,
     ...user,
     ...brand,
